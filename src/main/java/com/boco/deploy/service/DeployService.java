@@ -1,4 +1,4 @@
-package com.boco.deploy;
+package com.boco.deploy.service;
 
 import java.util.List;
 
@@ -37,7 +37,7 @@ public interface DeployService {
 	 * @param variableData 安装变量,不传用默认,仅生效一次
 	 * @return loggerId日志文件名称
 	 */
-	public String installPackage(String packageId,HostData hostData,VariableData variableData);
+	public String installPackage(String packageId,List<HostData> hostDatas,VariableData variableData);
 	
 	/**
 	 * 卸载指定主机上的安装包
@@ -46,7 +46,7 @@ public interface DeployService {
 	 * @param variableData 安装变量,不传用默认,仅生效一次
 	 * @return loggerId日志文件名称
 	 */
-	public String uninstallPackage(String packageId,HostData hostData,VariableData variableData);
+	public String uninstallPackage(String packageId,List<HostData> hostDatas,VariableData variableData);
 	
 	/**
 	 * 
