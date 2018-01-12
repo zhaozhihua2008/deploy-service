@@ -1,29 +1,21 @@
 package com.boco.deploy.data;
 
-import java.util.Properties;
+import java.util.Map;
 
 public class VariableData {
 
-	String packageId;
-	private Properties properties;
-	
-	public String getPackageId() {
-		return packageId;
-	}
-	public void setPackageId(String packageId) {
-		this.packageId = packageId;
-	}
-	public Properties getProperties() {
+	private Map<String, String> properties;;
+
+	public Map<String, String> getProperties() {
 		return properties;
 	}
-	public void setProperties(Properties properties) {
+	public void setProperties(Map<String, String> properties) {
 		this.properties = properties;
 	}
 	
 	@Override
 	public String toString() {
-		return "VariableData [packageId=" + packageId + ", properties="
-				+ properties + "]";
+		return "VariableData [properties="+ properties + "]";
 	}
 	
 	

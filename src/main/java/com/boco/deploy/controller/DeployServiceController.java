@@ -31,17 +31,17 @@ public class DeployServiceController {
     }
 	
     @RequestMapping(value="/variable",method=RequestMethod.POST)
-	public boolean setVariable(@RequestBody VariableData variableData){
-    	return deployService.setVariable(variableData.getPackageId(), variableData);
+	public boolean setVariable(@RequestBody SetVariableRequest request){
+    	return deployService.setVariable(request.getPackageId(), request.getVariableData());
     }
 	
     @RequestMapping(value="/install",method=RequestMethod.POST)
-	public String installPackage(@RequestBody InstallPackageRequest request){
+	public String installPackage(@RequestBody InstallPackageRequest request) throws Exception{
 		return deployService.installPackage(request.getPackageId(), request.getHostDatas(), request.getVariableData());
 	}
 	
     @RequestMapping(value="/uninstall",method=RequestMethod.POST)
-	public String uninstallPackage(@RequestBody InstallPackageRequest request){
+	public String uninstallPackage(@RequestBody InstallPackageRequest request) throws Exception{
 		return deployService.uninstallPackage(request.getPackageId(), request.getHostDatas(), request.getVariableData());	
 	}
 	

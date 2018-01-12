@@ -2,7 +2,9 @@ package com.boco.deploy.controller;
 
 import static org.junit.Assert.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.junit.After;
@@ -43,12 +45,13 @@ public class DeployServiceControllerTest {
 
 	@Test
 	public void testSetVariable() {
-		Properties properties=new Properties();
+		Map<String, String> properties=new HashMap<String, String>();
 		properties.put("k1", "v1");
-		properties.put("k2", "v2");
 		VariableData data=new VariableData();
-		data.setPackageId("k8s-v1.7.5");
 		data.setProperties(properties);
+		SetVariableRequest request=new SetVariableRequest();
+		request.setPackageId("k8s-v1.7.5");
+		request.setVariableData(data);
 		Boolean obj = restTemplate.postForObject(url+"variable", data, Boolean.class, "");
 		System.out.println(obj);
 	}

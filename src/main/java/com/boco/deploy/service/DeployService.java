@@ -36,8 +36,9 @@ public interface DeployService {
 	 * @param hostData
 	 * @param variableData 安装变量,不传用默认,仅生效一次
 	 * @return loggerId日志文件名称
+	 * @throws Exception 
 	 */
-	public String installPackage(String packageId,List<HostData> hostDatas,VariableData variableData);
+	public String installPackage(String packageId,List<HostData> hostDatas,VariableData variableData) throws Exception;
 	
 	/**
 	 * 卸载指定主机上的安装包
@@ -45,8 +46,9 @@ public interface DeployService {
 	 * @param hostData
 	 * @param variableData 安装变量,不传用默认,仅生效一次
 	 * @return loggerId日志文件名称
+	 * @throws Exception 
 	 */
-	public String uninstallPackage(String packageId,List<HostData> hostDatas,VariableData variableData);
+	public String uninstallPackage(String packageId,List<HostData> hostDatas,VariableData variableData) throws Exception;
 	
 	/**
 	 * 
