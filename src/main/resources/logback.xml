@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- For assistance related to logback-translator or configuration -->
+<!-- files in general, please contact the logback user mailing list -->
+<!-- at http://www.qos.ch/mailman/listinfo/logback-user -->
+<!-- -->
+<!-- For professional support please see -->
+<!-- http://www.qos.ch/shop/products/professionalSupport -->
+<!-- -->
+<configuration scan="true">
+
+	<!-- 控制台输出日志 -->
+	<appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+		<Target>System.out</Target>
+		<encoder>
+			<pattern>%date %level %logger{10} [%file : %line] %msg%n</pattern>
+		</encoder>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>INFO</level>
+		</filter>
+	</appender>
+	<appender name="D"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<!--See also http://logback.qos.ch/manual/appenders.html#RollingFileAppender -->
+		<Append>true</Append>
+		<File>${log.home}/info.log</File>
+		<encoder>
+			<pattern>%date %level %logger{10} [%file : %line] %msg%n</pattern>
+		</encoder>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>INFO</level>
+		</filter>
+		<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+			<maxIndex>100</maxIndex>
+			<FileNamePattern>${log.home}/info.log.%i</FileNamePattern>
+		</rollingPolicy>
+		<triggeringPolicy
+			class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+			<MaxFileSize>500MB</MaxFileSize>
+		</triggeringPolicy>
+	</appender>
+	<appender name="E"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<!--See also http://logback.qos.ch/manual/appenders.html#RollingFileAppender -->
+		<Append>true</Append>
+		<File>${log.home}/error.log</File>
+		<encoder>
+			<pattern>%date %level %logger{10} [%file : %line] %msg%n</pattern>
+		</encoder>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>ERROR</level>
+		</filter>
+		<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+			<maxIndex>100</maxIndex>
+			<FileNamePattern>${log.home}/error.log.%i</FileNamePattern>
+		</rollingPolicy>
+		<triggeringPolicy
+			class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+			<MaxFileSize>500MB</MaxFileSize>
+		</triggeringPolicy>
+	</appender>
+	<appender name="ASYNCD" class="ch.qos.logback.classic.AsyncAppender">
+		<appender-ref ref="D" />
+		<queueSize>100000</queueSize>
+		<discardingThreshold>0</discardingThreshold>
+	</appender>
+	<appender name="ASYNCE" class="ch.qos.logback.classic.AsyncAppender">
+		<appender-ref ref="E" />
+		<queueSize>100000</queueSize>
+		<discardingThreshold>0</discardingThreshold>
+	</appender>
+	<appender name="ASYNCstdout" class="ch.qos.logback.classic.AsyncAppender">
+		<appender-ref ref="stdout" />
+		<queueSize>100000</queueSize>
+		<discardingThreshold>0</discardingThreshold>
+	</appender>
+	
+	<root level="INFO">
+		<appender-ref ref="ASYNCstdout" />
+		<appender-ref ref="ASYNCD" />
+		<appender-ref ref="ASYNCE" />
+	</root>
+	<!-- 按用户输出日志 -->
+
+</configuration>
