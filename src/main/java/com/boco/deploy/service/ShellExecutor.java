@@ -12,10 +12,12 @@ import org.slf4j.LoggerFactory;
 public class ShellExecutor extends Thread{
 	private static final Logger logger = LoggerFactory.getLogger(ShellExecutor.class);
 	
+	File dir;
 	String cmd;
 	File logFile;
 	
-	public ShellExecutor(String cmd,File logFile) {
+	public ShellExecutor(File dir,String cmd,File logFile) {
+		this.dir=dir;
 		this.cmd=cmd;
 		this.logFile=logFile;
 	}
@@ -31,10 +33,12 @@ public class ShellExecutor extends Thread{
 		try {
 			output=new FileOutputStream(logFile);	
 			logger.info("going to executeShell:"+cmd+",save log at:"+logFile.getName());
-			Process proc = Runtime.getRuntime().exec(cmd);
+			Process proc = Runtime.getRuntime().exec(cmd,null,dir);
 			proc.waitFor();
 			input = proc.getInputStream();
 			IOUtils.copy(input, output);
+			InputStream errorStream = proc.getErrorStream();
+			IOUtils.copy(errorStream, output);
 		} catch (Exception e) {
 			logger.error("executeShell error:",e);
 		}finally{

@@ -1,25 +1,15 @@
 package com.boco.deploy.service;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.boco.deploy.data.HostData;
@@ -34,6 +24,9 @@ import com.boco.deploy.util.StringUtil;
 public class DeployServiceImpl implements DeployService {
 	private static Logger logger = LoggerFactory.getLogger(DeployServiceImpl.class);
 
+	@Value("${project.path}")
+	private String projectPath;
+	
 	@Override
 	public List<PackageData> getAllPackage(String exp) {
 		PackageData data=new PackageData();
@@ -69,11 +62,12 @@ public class DeployServiceImpl implements DeployService {
 		createTempShell("uninstall", packageId, variableData, timestamp);
 		
 		//exec command
-		String logPath=Constant.DIR_APP_LOG+packageId+"-"+opName+"-"+timestamp+".log";;
-		String cmd="ansible-playbook  -i "+hostsFileName+" "+opName+".yml --extra-vars \"package_id="+packageId+",timestamp="+timestamp+"\" -v ";
+		String logPath=projectPath+"/log/"+packageId+"-"+opName+"-"+timestamp+".log";
+		File dir=new File(projectPath+"/"+packageId);
+		String cmd="ansible-playbook  -i "+hostsFileName+" "+opName+".yml -e package_id="+packageId+" -e timestamp="+timestamp+" -v ";
 		File logFile=new File(logPath);
 		FileUtils.forceMkdirParent(logFile);
-		ShellExecutor shellExecutor=new ShellExecutor(cmd,logFile);
+		ShellExecutor shellExecutor=new ShellExecutor(dir,cmd,logFile);
 		shellExecutor.start();
 		return logPath;
 	}
@@ -86,7 +80,7 @@ public class DeployServiceImpl implements DeployService {
 		//write hosts file
 		String firstHost=hostDatas.get(0).getIp();
 		String hostsFileName=firstHost+"-"+timestamp+".hosts";
-		String hostsFilePath=Constant.DIR_APP_PROJECT+packageId+"/"+hostsFileName;
+		String hostsFilePath=projectPath+"/"+packageId+"/"+hostsFileName;
 		File hostsFile=new File(hostsFilePath);
 		List<String> hostsLines=new ArrayList<String>();
 		for (HostData hostData : hostDatas) {
@@ -109,14 +103,14 @@ public class DeployServiceImpl implements DeployService {
 			myVariable=getVariable(packageId);
 		}
 		String shellFileName=opName+"-"+timestamp+".sh";
-		String shellFilePath=Constant.DIR_APP_PROJECT+packageId+"/package/"+shellFileName;
+		String shellFilePath=projectPath+"/"+packageId+"/package/"+shellFileName;
 		File shellFile=new File(shellFilePath);
 		List<String> shellLines=new ArrayList<String>();
 		shellLines.add("#!/bin/sh");
 		if (myVariable!=null && myVariable.getProperties()!=null) {
 			Map<String, String> properties = myVariable.getProperties();
 			for (Entry<String, String> entry : properties.entrySet()) {
-				String line=entry.getKey()+" = "+ entry.getValue();
+				String line=entry.getKey()+"="+ entry.getValue();
 				shellLines.add(line);
 			}
 		}
@@ -137,9 +131,10 @@ public class DeployServiceImpl implements DeployService {
 		String opName="uninstall";
 		
 		//exec command
-		String logPath=Constant.DIR_APP_LOG+packageId+"-"+opName+"-"+timestamp+".log";;
-		String cmd="ansible-playbook  -i "+hostsFileName+" "+opName+".yml --extra-vars \"package_id="+packageId+"\" -v ";
-		ShellExecutor shellExecutor=new ShellExecutor(cmd, new File(logPath));
+		String logPath=projectPath+"/log/"+packageId+"-"+opName+"-"+timestamp+".log";
+		File dir=new File(projectPath+"/"+packageId);
+		String cmd="ansible-playbook  -i "+hostsFileName+" "+opName+".yml -e package_id="+packageId+" -v ";
+		ShellExecutor shellExecutor=new ShellExecutor(dir,cmd, new File(logPath));
 		shellExecutor.start();
 		return logPath;
 	
