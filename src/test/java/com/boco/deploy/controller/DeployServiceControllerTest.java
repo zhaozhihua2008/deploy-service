@@ -63,7 +63,7 @@ public class DeployServiceControllerTest {
 		String packageId="k8s-master_1.7.5.el7";
 		
 		HostData hostData2=new HostData();
-		hostData2.setIp("10.12.1.198");
+		hostData2.setIp("10.12.1.196");
 		hostData2.setUserName("root");
 		hostData2.setPassword("yiyangboco");
 		
@@ -104,6 +104,34 @@ public class DeployServiceControllerTest {
 		
 		String result = restTemplate.postForObject(url+"install", request, String.class, new String[0]);
 		System.out.println(result);
+	}
+	
+	@Test
+	public void testUninstallPackage_master() {
+
+		String packageId="k8s-master_1.7.5.el7";
+		
+		HostData hostData2=new HostData();
+		hostData2.setIp("10.12.1.196");
+		hostData2.setUserName("root");
+		hostData2.setPassword("yiyangboco");
+		
+		List<HostData> hostDatas=new ArrayList<HostData>();
+		hostDatas.add(hostData2);
+		
+		Map<String, String> properties=new HashMap<String, String>();
+//		properties.put("TOKEN", "7f1194.21c8935ef439b55e");
+//		properties.put("MASTER_IP_PORT", "10.12.1.198:6443");
+		VariableData variableData=new VariableData();
+		variableData.setProperties(properties);;
+		InstallPackageRequest request=new InstallPackageRequest();
+		request.setPackageId(packageId);
+		request.setHostDatas(hostDatas);
+		request.setVariableData(variableData);
+		
+		String result = restTemplate.postForObject(url+"uninstall", request, String.class, new String[0]);
+		System.out.println(result);
+	
 	}
 	
 	@Test
