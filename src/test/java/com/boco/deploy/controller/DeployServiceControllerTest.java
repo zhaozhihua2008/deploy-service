@@ -20,7 +20,7 @@ public class DeployServiceControllerTest {
 
 	RestTemplate restTemplate = new RestTemplate();
 	// String url="http://tpd4:8080/";
-	String url = "http://localhost:8080/";
+	String url="http://localhost:8080/";
 
 	@Before
 	public void setUp() throws Exception {
@@ -140,10 +140,10 @@ public class DeployServiceControllerTest {
 
 	}
 
-	// @Test
+	@Test
 	public void testGetInstallLog() {
 		Map<String, Object> uriVariables = new HashMap<String, Object>();
-		uriVariables.put("logId", "logtest.txt");
+		uriVariables.put("logId", "E:/tmp/logtest.txt");
 		uriVariables.put("startIndex", -1);
 		uriVariables.put("lineNum", 20);
 		System.out.println(uriVariables);
@@ -153,7 +153,7 @@ public class DeployServiceControllerTest {
 		System.out.println(log.getData());
 
 		Map<String, Object> variables = new HashMap<String, Object>();
-		variables.put("logId", "logtest.txt");
+		variables.put("logId", "E:/tmp/loglogtest.txt");
 		variables.put("startIndex", 0);
 		variables.put("lineNum", 25);
 		System.out.println(variables);
