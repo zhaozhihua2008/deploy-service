@@ -322,7 +322,7 @@ public class DeployServiceImpl implements DeployService {
 					builder.append(list.get(i));
 				}
 				logger.info("循环倒序读取日志");
-			} else if (startIndex >= 0 && startIndex < index) {
+			} else if (startIndex >= 0 && startIndex <= index) {
 				// 起始为0时从第一行开始
 				if (startIndex == 0) {
 					startIndex++;
