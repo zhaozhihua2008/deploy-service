@@ -44,7 +44,6 @@ public class DeployServiceImpl implements DeployService {
 
 	@Override
 	public List<PackageData> getAllPackage(String exp) {
-		System.out.println(projectPath);
 		List<PackageData> list = new LinkedList<PackageData>();
 		// 根据路径path读取目录中的文件夹
 		String path = projectPath + "/";
@@ -313,7 +312,6 @@ public class DeployServiceImpl implements DeployService {
 				// 获取行数小于0行或者超过能获取的最大行数时，只能获取当前最大行数的日志
 				if (lineNum > index || lineNum < 0) {
 					logger.info("获取行数小于0行或者超过能获取的最大行数时，只能获取当前最大行数的日志");
-					System.out.println("当前最多只能获取" + index + "行");
 					logger.debug("当前最多只能获取" + index + "行");
 					lineNum = index;
 					eof = true;
@@ -331,7 +329,6 @@ public class DeployServiceImpl implements DeployService {
 				// 获取行数小于0行或者超过能获取的最大行数时，只能获取当前最大行数的日志
 				if (lineNum >= index - startIndex + 1 || lineNum < 0) {
 					logger.info("获取行数小于0行或者超过能获取的最大行数时，只能获取当前最大行数的日志");
-					System.out.println("当前最多只能获取" + (index - startIndex + 1) + "行");
 					logger.debug("当前最多只能获取" + (index - startIndex + 1) + "行");
 					lineNum = index - startIndex + 1;
 					eof = true;
@@ -344,7 +341,7 @@ public class DeployServiceImpl implements DeployService {
 				logger.info("循环读取日志");
 				// 起始行数超过最大行时，只能获取从当前最大行数开始的日志
 			} else if (startIndex > index) {
-				System.out.println("当前只有" + index + "行");
+				logger.debug("当前只有" + index + "行");
 				startIndex = index;
 				eof = true;
 				logger.debug("起始行数:" + startIndex + "超过最大行:" + (index + 1) + "时，只能获取从当前最大行数开始的日志");
