@@ -48,11 +48,11 @@ public class DeployServiceImpl implements DeployService {
 		// 根据路径path读取目录中的文件夹
 		String path = projectPath + "/";
 		File file = new File(path);
-		logger.info("在" + path + "下创建File的对象");
+		logger.info("Create a File object in this path:" + path);
 		if (file.exists()) {
 			File[] files = file.listFiles();
 			int len = files.length;
-			logger.info("该路径下所有文件(夹)有:" + len + "个");
+			logger.info("All files (folders) in this path have a total of:" + len );
 			// 分别创建names数组和versions数组
 			String[] names = new String[len];
 			String[] versions = new String[len];
@@ -72,19 +72,19 @@ public class DeployServiceImpl implements DeployService {
 				PackageData packageData = new PackageData();
 				packageData.setName(names[i]);
 				packageData.setVersion(versions[i]);
-				logger.info("使用PackageData的对象循环接收属性:第" + (i + 1) + "个");
+				logger.info("Using PackageData object receives properties cyclically:This is NO." + (i + 1));
 				if (names[i] != null && versions[i] != null) {
 					// 无正则时全获取
 					if (exp == null) {
 						list.add(packageData);
-						logger.info("无正则时默认获取全部包");
+						logger.info("No regular express to get all the packages by default");
 					} else {
 						// 正则匹配
 						Pattern pattern = Pattern.compile(exp);
 						Matcher matcher = pattern.matcher(packageData.getId());
-						logger.info("有正则时进行正则匹配");
+						logger.info("There are regular express matching:");
 						if (matcher.find()) { // 当前为模糊匹配
-							logger.info("当前匹配方式为模糊匹配");
+							logger.info("The current matching method is fuzzy matching by matcher.find()");
 							list.add(packageData);
 						}
 					}
@@ -101,15 +101,15 @@ public class DeployServiceImpl implements DeployService {
 		// 根据path路径创建file对象
 		String path = projectPath + "/" + packageId + "/" + Constant.PACKAGE_NAME + "/variable.properties";
 		File file = new File(path);
-		logger.info("在" + path + "下创建File的对象");
+		logger.info("Create a File object in this path:" + path);
 		InputStream input = null;
 		try {
 			// 用property对象接收文件中的属性
 			Properties property = new Properties();
 			input = new BufferedInputStream(new FileInputStream(file));
-			logger.info("从File的对象中生成输入流");
+			logger.info("Create an input stream from the File's object");
 			property.load(input);
-			logger.info("Properties的对象装载输入流");
+			logger.info("Properties object loads the input stream");
 			// 迭代property对象并分别取出属性的key和value放入map中
 			Enumeration<?> en = property.propertyNames();
 			while (en.hasMoreElements()) {
@@ -117,18 +117,18 @@ public class DeployServiceImpl implements DeployService {
 				String value = property.getProperty(key);
 				map.put(key, value);
 			}
-			logger.info("依次取出属性键值对");
+			logger.info("Get the properties' key-value pairs in turn");
 			var.setProperties(map);
-			logger.info("取出的属性键值对赋值给VariableData的对象并返回");
+			logger.info("The getted properties' key-value pairs are assigned to the VariableData object and returned");
 		} catch (IOException e) {
-			logger.error("生成输入流遇到IO异常,请检查文件路径" + path);
+			logger.error("Creating the input stream failed by an IO exception, please check the file path:" + path);
 			e.printStackTrace();
 		} finally {
 			if (input != null) {
 				try {
 					input.close();
 				} catch (IOException e) {
-					logger.error("关闭输入流遇到IO异常");
+					logger.error("Closing the input stream failed by an IO exception");
 					e.printStackTrace();
 				}
 			}
@@ -141,16 +141,16 @@ public class DeployServiceImpl implements DeployService {
 		boolean result = false;
 		// 把参数variableData中的属性放入map集合
 		Map<String, String> map = variableData.getProperties();
-		logger.info("把参数variableData中的属性放入map集合");
+		logger.info("Put the properties in the VariableData's object into a Map collection");
 		// 根据path路径创建file对象
 		String path = projectPath + "/" + packageId + "/" + Constant.PACKAGE_NAME + "/variable.properties";
 		File file = new File(path);
-		logger.info("在" + path + "下创建File的对象");
+		logger.info("Create a File object in this path:" + path);
 		OutputStream output = null;
 		Properties property = new Properties();
 		try {
 			output = new FileOutputStream(file);
-			logger.info("在该路径创建输出流OutputStream的对象");
+			logger.info("Create an OutputStream object in this path");
 			// 遍历读取map集合中的属性并用property对象循环接收
 			Iterator<Entry<String, String>> iter = map.entrySet().iterator();
 			while (iter.hasNext()) {
@@ -159,23 +159,23 @@ public class DeployServiceImpl implements DeployService {
 				String value = entry.getValue();
 				property.setProperty(key, value);
 			}
-			logger.info("遍历读取map集合中的属性并用Properties的对象循环接收");
+			logger.info("Traversing reads and receives the peoperties in the Map collection with the object of Properties");
 			// 把property对象写入输出流并返回值置为true
 			property.store(output, "Updated properties");
 			result = true;
-			logger.info("接收成功,把Properties的对象写入输出流并将返回值置为true");
+			logger.info("Received successfully!Write the Properties object to the output stream and return true");
 		} catch (FileNotFoundException e) {
-			logger.error("找不到文件,请检查文件路径" + path);
+			logger.error("Can not find the file, please check the file path:" + path);
 			e.printStackTrace();
 		} catch (IOException e) {
-			logger.error("写入Properties的对象失败,遇到IO异常");
+			logger.error("Writing Properties to object failed by an IO exception");
 			e.printStackTrace();
 		} finally {
 			if (output != null) {
 				try {
 					output.close();
 				} catch (IOException e) {
-					logger.error("关闭输出流遇到IO异常");
+					logger.error("Closing the input stream failed by an IO exception");
 					e.printStackTrace();
 				}
 			}
@@ -187,9 +187,10 @@ public class DeployServiceImpl implements DeployService {
 	public String installPackage(String packageId, List<HostData> hostDatas, VariableData variableData)
 			throws Exception {
 		String timestamp = StringUtil.getTimeStamp();
+		logger.info("Create timestamp:"+timestamp);
 		// write hosts file
 		String hostsFileName = createHostsFile(packageId, hostDatas, variableData, timestamp);
-
+		logger.info("Create hosts file by parameters:packageId,hostDatas,variableData,timestamp");
 		// create temp shell
 		String opName = "install";
 		createTempShell(opName, packageId, variableData, timestamp);
@@ -283,53 +284,54 @@ public class DeployServiceImpl implements DeployService {
 		InstallLogData log = new InstallLogData();
 		log.setLogId(logId);
 		// 根据path路径创建file对象
-		String path = Constant.DIR_APP_LOG + logId;
+		String path = projectPath +"/" + logId;
 		File file = new File(path);
-		logger.info("在" + path + "下创建File的对象");
+		logger.info("Create a File object in this path:" + path);
 		BufferedReader reader = null;
-		logger.info("创建BufferedReader对象");
+		logger.info("Create a BufferedReader object");
 		StringBuilder builder = new StringBuilder();
 		// 读入文件内容最后放入list集合
 		List<String> list = new ArrayList<String>();
-		logger.info("创建StringBuilder字符串对象和List集合对象");
+		logger.info("Create a StringBuilder string object and List collection object");
 		int index = 0;// 文件行数
 		boolean eof = false;
 		try {
 			reader = new BufferedReader(new FileReader(file));
-			logger.info("读取File对象");
+			logger.info("Read File object");
 			String tempString = null;
 			while ((tempString = reader.readLine()) != null) {
-				list.add("当前第" + (index + 1) + "行: " + tempString);
+				// list.add("This is No." + (index + 1) + " line:" + tempString);
+				list.add(tempString);
 				index++;
 			}
-			logger.info("按行读取日志文件,共有" + index + "行");
+			logger.info("Reading log files by line,total number of lines is:" + index);
 			log.setEndIndex(index);
 			if (index == 0) {
-				logger.debug("当前日志为空");
+				logger.debug("The current log file is empty!");
 				eof = true;
 			} else if (startIndex == -1) { // 倒序读取日志
-				logger.info("startIndex为:" + startIndex + ",执行倒序读取日志");
+				logger.info("Executing reverse read log file.Start index is:" + startIndex);
 				// 获取行数小于0行或者超过能获取的最大行数时，只能获取当前最大行数的日志
 				if (lineNum > index || lineNum < 0) {
-					logger.info("获取行数小于0行或者超过能获取的最大行数时，只能获取当前最大行数的日志");
-					logger.debug("当前最多只能获取" + index + "行");
+					logger.info("Only can get the current maximum number of lines in this log if (lineNum > index || lineNum < 0)");
+					logger.debug("Parameter lineNum overflow!Currently total number of lines is only:" + index );
 					lineNum = index;
 					eof = true;
 				}
 				for (int i = index - 1; i >= index - lineNum; i--) {
 					builder.append(list.get(i));
 				}
-				logger.info("循环倒序读取日志");
+				logger.info("Cyclically read the log in reverse order");
 			} else if (startIndex >= 0 && startIndex <= index) {
 				// 起始为0时从第一行开始
 				if (startIndex == 0) {
 					startIndex++;
-					logger.info("起始为0时从第一行开始");
+					logger.info("Start at first line when starting from 0");
 				}
 				// 获取行数小于0行或者超过能获取的最大行数时，只能获取当前最大行数的日志
 				if (lineNum >= index - startIndex + 1 || lineNum < 0) {
-					logger.info("获取行数小于0行或者超过能获取的最大行数时，只能获取当前最大行数的日志");
-					logger.debug("当前最多只能获取" + (index - startIndex + 1) + "行");
+					logger.info("Only can get the current maximum number of lines in this log if (lineNum >= index - startIndex + 1 || lineNum < 0)");
+					logger.debug("Parameter lineNum overflow!Currently total number of lines is only:" + (index - startIndex + 1));
 					lineNum = index - startIndex + 1;
 					eof = true;
 				}
@@ -338,31 +340,30 @@ public class DeployServiceImpl implements DeployService {
 						builder.append(list.get(i));
 					}
 				}
-				logger.info("循环读取日志");
+				logger.info("Read the log cyclically");
 				// 起始行数超过最大行时，只能获取从当前最大行数开始的日志
 			} else if (startIndex > index) {
-				logger.debug("当前只有" + index + "行");
 				startIndex = index;
 				eof = true;
-				logger.debug("起始行数:" + startIndex + "超过最大行:" + (index + 1) + "时，只能获取从当前最大行数开始的日志");
+				logger.debug("Parameter startIndex overflow!Currently total number of lines is only:" + index );
 			} else {
-				logger.error("startIndex不能为" + startIndex + "!请输入正确的startIndex值");
+				logger.error("Parameter startIndex:" + startIndex + "is illegal!Please enter correct startIndex!");
 			}
 			log.setData(builder.toString());
 			log.setEof(eof);
-			logger.info("保存读取后的日志文件到InstallLogData对象的Data并返回");
+			logger.info("Save the read log file to InstallLogData object's data and return");
 		} catch (FileNotFoundException e) {
-			logger.error("找不到日志文件,请检查路径:" + path);
+			logger.error("Can not find the log file, please check the file path:" + path);
 			e.printStackTrace();
 		} catch (IOException e) {
-			logger.error("读取日志文件发生IO异常");
+			logger.error("Reading log file failed by an IO exception");
 			e.printStackTrace();
 		} finally {
 			if (reader != null) {
 				try {
 					reader.close();
 				} catch (IOException e1) {
-					logger.error("关闭BufferedReader对象发生IO异常");
+					logger.error("Closing BufferedReader failed by an IO exception");
 				}
 			}
 		}
