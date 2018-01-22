@@ -9,4 +9,5 @@ public class Constant {
 	final public static String DIR_APP_LOG = DIR_APP_HOME + "log/";
 	final public static String PACKAGE_NAME = "package";
 	
+	final public static String UNDERLINE="_";
 }

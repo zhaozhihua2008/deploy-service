@@ -5,34 +5,30 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.boco.deploy.data.HostData;
 import com.boco.deploy.data.InstallLogData;
+import com.boco.deploy.data.InstanceData;
 import com.boco.deploy.data.PackageData;
 import com.boco.deploy.data.VariableData;
 import com.boco.deploy.util.Constant;
+import com.boco.deploy.util.ExecutorServiceManager;
 import com.boco.deploy.util.StringUtil;
 
 @Service
@@ -60,7 +56,7 @@ public class DeployServiceImpl implements DeployService {
 			for (int i = 0; i < len; i++) {
 				if (files[i].isDirectory()) {
 					// 将文件夹目录名截取
-					String[] dirs = files[i].getName().split("_");
+					String[] dirs = files[i].getName().split(Constant.UNDERLINE);
 					if (dirs.length == 2) {
 						for (int j = 0; j < dirs.length; j++) {
 							names[i] = dirs[0];
@@ -137,146 +133,39 @@ public class DeployServiceImpl implements DeployService {
 	}
 
 	@Override
-	public boolean setVariable(String packageId, VariableData variableData) {
-		boolean result = false;
-		// 把参数variableData中的属性放入map集合
-		Map<String, String> map = variableData.getProperties();
-		logger.info("Put the properties in the VariableData's object into a Map collection");
-		// 根据path路径创建file对象
-		String path = projectPath + "/" + packageId + "/" + Constant.PACKAGE_NAME + "/variable.properties";
-		File file = new File(path);
-		logger.info("Create a File object in this path:" + path);
-		OutputStream output = null;
-		Properties property = new Properties();
-		try {
-			output = new FileOutputStream(file);
-			logger.info("Create an OutputStream object in this path");
-			// 遍历读取map集合中的属性并用property对象循环接收
-			Iterator<Entry<String, String>> iter = map.entrySet().iterator();
-			while (iter.hasNext()) {
-				Map.Entry<String, String> entry = (Map.Entry<String, String>) iter.next();
-				String key = entry.getKey();
-				String value = entry.getValue();
-				property.setProperty(key, value);
-			}
-			logger.info("Traversing reads and receives the peoperties in the Map collection with the object of Properties");
-			// 把property对象写入输出流并返回值置为true
-			property.store(output, "Updated properties");
-			result = true;
-			logger.info("Received successfully!Write the Properties object to the output stream and return true");
-		} catch (FileNotFoundException e) {
-			logger.error("Can not find the file, please check the file path:" + path);
-			e.printStackTrace();
-		} catch (IOException e) {
-			logger.error("Writing Properties to object failed by an IO exception");
-			e.printStackTrace();
-		} finally {
-			if (output != null) {
-				try {
-					output.close();
-				} catch (IOException e) {
-					logger.error("Closing the input stream failed by an IO exception");
-					e.printStackTrace();
-				}
-			}
+	public List<String> installPackage(List<InstanceData> instanceDatas)throws Exception {
+		List<String> logPaths=new ArrayList<String>();
+		String timestamp = StringUtil.getTimeStamp();
+		for (InstanceData instance : instanceDatas) {
+			String instanceName = instance.getInstanceName();
+			String packageId= instance.getPackageData().getId();
+			String instanceId = packageId+Constant.UNDERLINE+instanceName;
+			String logPath = projectPath + "/log/" + instanceId + "_install_" + timestamp + ".log";
+			logPaths.add(logPath);
+			logger.info("going to install instance: "+instanceId);
+			InstallThread installThread=new InstallThread(projectPath, instance, logPath, timestamp);
+			ExecutorServiceManager.getInstance().getExecutor().execute(installThread);
 		}
-		return result;
+		
+		return logPaths;
 	}
 
 	@Override
-	public String installPackage(String packageId, List<HostData> hostDatas, VariableData variableData)
-			throws Exception {
+	public List<String> uninstallPackage(List<InstanceData> instanceDatas)throws Exception {
+		List<String> logPaths=new ArrayList<String>();
 		String timestamp = StringUtil.getTimeStamp();
-		logger.info("Create timestamp:"+timestamp);
-		// write hosts file
-		String hostsFileName = createHostsFile(packageId, hostDatas, variableData, timestamp);
-		logger.info("Create hosts file by parameters:packageId,hostDatas,variableData,timestamp");
-		// create temp shell
-		String opName = "install";
-		createTempShell(opName, packageId, variableData, timestamp);
-		createTempShell("uninstall", packageId, variableData, timestamp);
-
-		// exec command
-		String logPath = projectPath + "/log/" + packageId + "-" + opName + "-" + timestamp + ".log";
-		File dir = new File(projectPath + "/" + packageId);
-		String cmd = "ansible-playbook  -i " + hostsFileName + " " + opName + ".yml -e package_id=" + packageId
-				+ " -e timestamp=" + timestamp + " -v ";
-		File logFile = new File(logPath);
-		FileUtils.forceMkdirParent(logFile);
-		ShellExecutor shellExecutor = new ShellExecutor(dir, cmd, logFile);
-		shellExecutor.start();
-		return logPath;
-	}
-
-	/**
-	 * 根据hostDatas生成ansible hosts文件
-	 */
-	private String createHostsFile(String packageId, List<HostData> hostDatas, VariableData variableData,
-			String timestamp) throws Exception {
-		// write hosts file
-		String firstHost = hostDatas.get(0).getIp();
-		String hostsFileName = firstHost + "-" + timestamp + ".hosts";
-		String hostsFilePath = projectPath + "/" + packageId + "/" + hostsFileName;
-		File hostsFile = new File(hostsFilePath);
-		List<String> hostsLines = new ArrayList<String>();
-		for (HostData hostData : hostDatas) {
-			String line = hostData.getIp() + " ansible_ssh_user=" + hostData.getUserName() + " ansible_ssh_pass="
-					+ hostData.getPassword();
-			if (hostData.isSudo()) {
-				line = line + " ansible_sudo_pass=" + hostData.getSudoPass() + " ansible_become=true";
-			}
-			hostsLines.add(line);
+		for (InstanceData instance : instanceDatas) {
+			String instanceName = instance.getInstanceName();
+			String packageId= instance.getPackageData().getId();
+			String instanceId = packageId+Constant.UNDERLINE+instanceName;
+			String logPath = projectPath + "/log/" + instanceId + "_uninstall_" + timestamp + ".log";
+			logPaths.add(logPath);
+			logger.info("going to uninstall instance: "+instanceId);
+			UninstallThread uninstallThread=new UninstallThread(projectPath, instance, logPath, timestamp);
+			ExecutorServiceManager.getInstance().getExecutor().execute(uninstallThread);
 		}
-		FileUtils.writeLines(hostsFile, hostsLines);
-		return hostsFileName;
-	}
-
-	/**
-	 * 根据变量创建临时脚本
-	 */
-	private String createTempShell(String opName, String packageId, VariableData variableData, String timestamp)
-			throws Exception {
-		VariableData myVariable = variableData;
-		if (myVariable == null) {
-			myVariable = getVariable(packageId);
-		}
-		String shellFileName = opName + "-" + timestamp + ".sh";
-		String shellFilePath = projectPath + "/" + packageId + "/package/" + shellFileName;
-		File shellFile = new File(shellFilePath);
-		List<String> shellLines = new ArrayList<String>();
-		shellLines.add("#!/bin/sh");
-		if (myVariable != null && myVariable.getProperties() != null) {
-			Map<String, String> properties = myVariable.getProperties();
-			for (Entry<String, String> entry : properties.entrySet()) {
-				String line = entry.getKey() + "=" + entry.getValue();
-				shellLines.add(line);
-			}
-		}
-		shellLines.add("source ./" + opName + ".sh");
-		FileUtils.writeLines(shellFile, shellLines);
-		return shellFileName;
-	}
-
-	@Override
-	public String uninstallPackage(String packageId, List<HostData> hostDatas, VariableData variableData)
-			throws Exception {
-
-		String timestamp = StringUtil.getTimeStamp();
-		// write hosts file
-		String hostsFileName = createHostsFile(packageId, hostDatas, variableData, timestamp);
-
-		// shell already created when installed.
-		String opName = "uninstall";
-
-		// exec command
-		String logPath = projectPath + "/log/" + packageId + "-" + opName + "-" + timestamp + ".log";
-		File dir = new File(projectPath + "/" + packageId);
-		String cmd = "ansible-playbook  -i " + hostsFileName + " " + opName + ".yml -e package_id=" + packageId
-				+ " -v ";
-		ShellExecutor shellExecutor = new ShellExecutor(dir, cmd, new File(logPath));
-		shellExecutor.start();
-		return logPath;
-
+		return logPaths;
+	
 	}
 
 	@Override

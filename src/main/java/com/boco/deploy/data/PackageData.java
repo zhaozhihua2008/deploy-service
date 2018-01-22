@@ -5,7 +5,7 @@ public class PackageData {
 	private String version;
 	
 	public String getId(){
-		return name+"-"+version;
+		return name+"_"+version;
 	}
 
 	public String getName() {
