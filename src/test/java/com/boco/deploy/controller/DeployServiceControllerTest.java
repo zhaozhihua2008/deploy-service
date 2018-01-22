@@ -156,7 +156,7 @@ public class DeployServiceControllerTest {
 
 		List<HostData> hostDatas = new ArrayList<HostData>();
 		hostDatas.add(hostData2);
-
+ 
 		Map<String, String> properties = new HashMap<String, String>();
 //		properties.put("TOKEN", "7f1194.21c8935ef439b55e");
 //		properties.put("MASTER_IP_PORT", "10.12.1.198:6443");
