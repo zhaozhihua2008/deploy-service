@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.boco.deploy.data.HostData;
 import com.boco.deploy.data.InstallLogData;
+import com.boco.deploy.data.InstanceData;
 import com.boco.deploy.data.PackageData;
 import com.boco.deploy.data.VariableData;
 
@@ -24,32 +25,21 @@ public interface DeployService {
 	public VariableData getVariable(String packageId);
 	
 	/**
-	 * 设置安装变量默认值
-	 * @param variableData
-	 * @return
-	 */
-	public boolean setVariable(String packageId,VariableData variableData);
-	
-	/**
-	 * 向主机部署安装包
-	 * @param packageId
-	 * @param hostData
-	 * @param variableData 安装变量,不传用默认,仅生效一次
-	 * @return loggerId日志文件名称
+	 * 向主机部署实例
+	 * @param instanceDatas 安装实例对象集合
+	 * @return loggerId日志文件名称集合
 	 * @throws Exception 
 	 */
-	public String installPackage(String packageId,List<HostData> hostDatas,VariableData variableData) throws Exception;
+	public List<String> installPackage(List<InstanceData> instanceDatas) throws Exception;
 	
 	/**
-	 * 卸载指定主机上的安装包
-	 * @param packageId
-	 * @param hostData
-	 * @param variableData 安装变量,不传用默认,仅生效一次
-	 * @return loggerId日志文件名称
+	 * 卸载主机上的实例
+	 * @param instanceDatas 安装实例对象集合
+	 * @return loggerId日志文件名称集合
 	 * @throws Exception 
 	 */
-	public String uninstallPackage(String packageId,List<HostData> hostDatas,VariableData variableData) throws Exception;
-	
+	public List<String> uninstallPackage(List<InstanceData> instanceDatas) throws Exception;
+
 	/**
 	 * 
 	 * @param logId 日志文件id

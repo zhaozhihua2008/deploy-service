@@ -3,6 +3,7 @@ package com.boco.deploy.controller;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,8 @@ import org.springframework.web.client.RestTemplate;
 
 import com.boco.deploy.data.HostData;
 import com.boco.deploy.data.InstallLogData;
+import com.boco.deploy.data.InstanceData;
+import com.boco.deploy.data.PackageData;
 import com.boco.deploy.data.VariableData;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -51,47 +54,39 @@ public class DeployServiceControllerTest {
 	}
 
 	@Test
-	public void testSetVariable() {
-		VariableData var = new VariableData();
-		Map<String, String> properties = new HashMap<>();
-		properties.put("k1", "v1");
-		properties.put("test1", "test1");
-		properties.put("test2", "test2");
-		properties.put("testkey", "testvalue");
-		var.setProperties(properties);
-		SetVariableRequest request = new SetVariableRequest();
-		request.setPackageId("k8s-v1.7.5");
-		request.setVariableData(var);
-		Boolean obj = restTemplate.postForObject(url + "variable", request, Boolean.class, "");
-		System.out.println(obj);
-	}
-
-	@Test
 	public void testInstallPackage_master() {
-		String packageId = "k8s-master_1.7.5.el7";
-
+		PackageData packageData=new PackageData();
+		packageData.setName("k8s-master");
+		packageData.setVersion("1.7.5.el7");
+		
 		HostData hostData2 = new HostData();
 		hostData2.setIp("10.12.1.196");
 		hostData2.setUserName("root");
 		hostData2.setPassword("yiyangboco");
 
-		List<HostData> hostDatas = new ArrayList<HostData>();
-		hostDatas.add(hostData2);
-
+		Map<String, String> properties = new HashMap<String, String>();
+		properties.put("k1", "v1");
 		VariableData variableData = new VariableData();
-		InstallPackageRequest request = new InstallPackageRequest();
-		request.setPackageId(packageId);
-		request.setHostDatas(hostDatas);
-		request.setVariableData(variableData);
+		variableData.setProperties(properties);
+		
+		InstanceData instanceData=new InstanceData();
+		instanceData.setHostData(hostData2);
+		instanceData.setInstanceName("instance-1");
+		instanceData.setPackageData(packageData);
+		
+		List<InstanceData> instanceDatas=Arrays.asList(instanceData);
 
-		String result = restTemplate.postForObject(url + "install", request, String.class, new String[0]);
+
+		String result = restTemplate.postForObject(url + "install", instanceDatas, String.class, new String[0]);
 		System.out.println(result);
 	}
 
 	@Test
 	public void testInstallPackage_node() {
-		String packageId = "k8s-node_1.7.5.el7";
-
+		PackageData packageData=new PackageData();
+		packageData.setName("k8s-node");
+		packageData.setVersion("1.7.5.el7");
+		
 		HostData hostData2 = new HostData();
 		hostData2.setIp("10.12.1.197");
 		hostData2.setUserName("root");
@@ -105,49 +100,53 @@ public class DeployServiceControllerTest {
 		properties.put("MASTER_IP_PORT", "10.12.1.198:6443");
 		VariableData variableData = new VariableData();
 		variableData.setProperties(properties);
-		;
-		InstallPackageRequest request = new InstallPackageRequest();
-		request.setPackageId(packageId);
-		request.setHostDatas(hostDatas);
-		request.setVariableData(variableData);
 
-		String result = restTemplate.postForObject(url + "install", request, String.class, new String[0]);
+		InstanceData instanceData=new InstanceData();
+		instanceData.setHostData(hostData2);
+		instanceData.setInstanceName("instance-1");
+		instanceData.setPackageData(packageData);
+		
+		List<InstanceData> instanceDatas=Arrays.asList(instanceData);
+
+
+		String result = restTemplate.postForObject(url + "install", instanceDatas, String.class, new String[0]);
 		System.out.println(result);
 	}
 	
 	@Test
 	public void testUninstallPackage_master() {
-
-		String packageId="k8s-master_1.7.5.el7";
+		PackageData packageData=new PackageData();
+		packageData.setName("k8s-master");
+		packageData.setVersion("1.7.5.el7");
 		
-		HostData hostData2=new HostData();
+		HostData hostData2 = new HostData();
 		hostData2.setIp("10.12.1.196");
 		hostData2.setUserName("root");
 		hostData2.setPassword("yiyangboco");
+
+		Map<String, String> properties = new HashMap<String, String>();
+		properties.put("k1", "v1");
+		VariableData variableData = new VariableData();
+		variableData.setProperties(properties);
 		
-		List<HostData> hostDatas=new ArrayList<HostData>();
-		hostDatas.add(hostData2);
+		InstanceData instanceData=new InstanceData();
+		instanceData.setHostData(hostData2);
+		instanceData.setInstanceName("instance-1");
+		instanceData.setPackageData(packageData);
 		
-		Map<String, String> properties=new HashMap<String, String>();
-//		properties.put("TOKEN", "7f1194.21c8935ef439b55e");
-//		properties.put("MASTER_IP_PORT", "10.12.1.198:6443");
-		VariableData variableData=new VariableData();
-		variableData.setProperties(properties);;
-		InstallPackageRequest request=new InstallPackageRequest();
-		request.setPackageId(packageId);
-		request.setHostDatas(hostDatas);
-		request.setVariableData(variableData);
-		
-		String result = restTemplate.postForObject(url+"uninstall", request, String.class, new String[0]);
+		List<InstanceData> instanceDatas=Arrays.asList(instanceData);
+
+
+		String result = restTemplate.postForObject(url + "uninstall", instanceDatas, String.class, new String[0]);
 		System.out.println(result);
-	
 	}
-	
+
 	@Test
 	public void testUninstallPackage_node() {
-
-		String packageId = "k8s-node_1.7.5.el7";
-
+		PackageData packageData=new PackageData();
+		packageData.setName("k8s-node");
+		packageData.setVersion("1.7.5.el7");
+		
 		HostData hostData2 = new HostData();
 		hostData2.setIp("10.12.1.197");
 		hostData2.setUserName("root");
@@ -157,19 +156,21 @@ public class DeployServiceControllerTest {
 		hostDatas.add(hostData2);
 
 		Map<String, String> properties = new HashMap<String, String>();
-		// properties.put("TOKEN", "7f1194.21c8935ef439b55e");
-		// properties.put("MASTER_IP_PORT", "10.12.1.198:6443");
+		properties.put("TOKEN", "7f1194.21c8935ef439b55e");
+		properties.put("MASTER_IP_PORT", "10.12.1.198:6443");
 		VariableData variableData = new VariableData();
 		variableData.setProperties(properties);
-		;
-		InstallPackageRequest request = new InstallPackageRequest();
-		request.setPackageId(packageId);
-		request.setHostDatas(hostDatas);
-		request.setVariableData(variableData);
 
-		String result = restTemplate.postForObject(url + "uninstall", request, String.class, new String[0]);
+		InstanceData instanceData=new InstanceData();
+		instanceData.setHostData(hostData2);
+		instanceData.setInstanceName("instance-1");
+		instanceData.setPackageData(packageData);
+		
+		List<InstanceData> instanceDatas=Arrays.asList(instanceData);
+
+
+		String result = restTemplate.postForObject(url + "uninstall", instanceDatas, String.class, new String[0]);
 		System.out.println(result);
-
 	}
 
 	@Test

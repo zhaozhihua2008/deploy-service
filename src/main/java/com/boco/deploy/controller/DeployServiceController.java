@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.boco.deploy.data.InstallLogData;
+import com.boco.deploy.data.InstanceData;
 import com.boco.deploy.data.PackageData;
 import com.boco.deploy.data.VariableData;
 import com.boco.deploy.service.DeployService;
@@ -30,19 +31,14 @@ public class DeployServiceController {
     	return deployService.getVariable(packageId);
     }
 	
-    @RequestMapping(value="/variable",method=RequestMethod.POST)
-	public boolean setVariable(@RequestBody SetVariableRequest request){
-    	return deployService.setVariable(request.getPackageId(), request.getVariableData());
-    }
-	
     @RequestMapping(value="/install",method=RequestMethod.POST)
-	public String installPackage(@RequestBody InstallPackageRequest request) throws Exception{
-		return deployService.installPackage(request.getPackageId(), request.getHostDatas(), request.getVariableData());
+	public List<String> installPackage(@RequestBody List<InstanceData> instanceDatas) throws Exception{
+		return deployService.installPackage(instanceDatas);
 	}
 	
     @RequestMapping(value="/uninstall",method=RequestMethod.POST)
-	public String uninstallPackage(@RequestBody InstallPackageRequest request) throws Exception{
-		return deployService.uninstallPackage(request.getPackageId(), request.getHostDatas(), request.getVariableData());	
+	public List<String> uninstallPackage(@RequestBody List<InstanceData> instanceDatas) throws Exception{
+		return deployService.uninstallPackage(instanceDatas);	
 	}
 	
     @RequestMapping(value="/log",method=RequestMethod.GET)

@@ -1,6 +1,7 @@
 package com.boco.deploy.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import com.boco.deploy.data.HostData;
 import com.boco.deploy.data.InstallLogData;
+import com.boco.deploy.data.InstanceData;
 import com.boco.deploy.data.PackageData;
 import com.boco.deploy.data.VariableData;
 
@@ -23,7 +25,7 @@ public class DeployServiceImplTest {
 
 	@Before
 	public void setUp() throws Exception {
-		// System.setProperty("APP_HOME", "c:/tmp");
+		System.setProperty("APP_HOME", "c:/tmp");
 		System.setProperty("APP_HOME", "E:/tmp");
 		impl = new DeployServiceImpl();
 		impl.setProjectPath("E:/tmp/project");
@@ -34,9 +36,12 @@ public class DeployServiceImplTest {
 	public void tearDown() throws Exception {
 	}
 
-	// @Test
+	@Test
 	public void testInstallPackage() throws Exception {
-		String packageId = "k8s-master_1.7.5.el7";
+		PackageData packageData=new PackageData();
+		packageData.setName("k8s-master");
+		packageData.setVersion("1.7.5.el7");
+		
 		HostData hostData1 = new HostData();
 		hostData1.setIp("tpd1");
 		hostData1.setUserName("xdpp");
@@ -44,26 +49,27 @@ public class DeployServiceImplTest {
 		hostData1.setSudo(true);
 		hostData1.setSudoPass("xdpp");
 
-		HostData hostData2 = new HostData();
-		hostData2.setIp("tpd2");
-		hostData2.setUserName("root");
-		hostData2.setPassword("yiyangboco");
-
-		List<HostData> hostDatas = new ArrayList<HostData>();
-		hostDatas.add(hostData1);
-		hostDatas.add(hostData2);
-
 		Map<String, String> properties = new HashMap<String, String>();
 		properties.put("k1", "v1");
 		VariableData variableData = new VariableData();
 		variableData.setProperties(properties);
-		impl.installPackage(packageId, hostDatas, variableData);
+		
+		InstanceData instanceData=new InstanceData();
+		instanceData.setHostData(hostData1);
+		instanceData.setInstanceName("instance-1");
+		instanceData.setPackageData(packageData);
+		
+		List<InstanceData> instanceDatas=Arrays.asList(instanceData);
+		impl.installPackage(instanceDatas);
 	}
 
-	// @Test
+	@Test
 	public void testUninstallPackage() throws Exception {
 
-		String packageId = "k8s-master_1.7.5.el7";
+		PackageData packageData=new PackageData();
+		packageData.setName("k8s-master");
+		packageData.setVersion("1.7.5.el7");
+		
 		HostData hostData1 = new HostData();
 		hostData1.setIp("tpd1");
 		hostData1.setUserName("xdpp");
@@ -71,24 +77,22 @@ public class DeployServiceImplTest {
 		hostData1.setSudo(true);
 		hostData1.setSudoPass("xdpp");
 
-		HostData hostData2 = new HostData();
-		hostData2.setIp("tpd2");
-		hostData2.setUserName("root");
-		hostData2.setPassword("yiyangboco");
-
-		List<HostData> hostDatas = new ArrayList<HostData>();
-		hostDatas.add(hostData1);
-		hostDatas.add(hostData2);
-
 		Map<String, String> properties = new HashMap<String, String>();
 		properties.put("k1", "v1");
 		VariableData variableData = new VariableData();
 		variableData.setProperties(properties);
-		impl.uninstallPackage(packageId, hostDatas, variableData);
-
+		
+		InstanceData instanceData=new InstanceData();
+		instanceData.setHostData(hostData1);
+		instanceData.setInstanceName("instance-1");
+		instanceData.setPackageData(packageData);
+		
+		List<InstanceData> instanceDatas=Arrays.asList(instanceData);
+		impl.uninstallPackage(instanceDatas);
+	
 	}
 
-	// @Test
+	@Test
 	public void testGetAllPackage() {
 		List<PackageData> allPackage = impl.getAllPackage(null);
 		for (int i = 0; i < allPackage.size(); i++) {
@@ -123,25 +127,12 @@ public class DeployServiceImplTest {
 		}
 	}
 
-	// @Test
+	@Test
 	public void testGetVariable() {
 		VariableData var1 = impl.getVariable("test_0.0.1");
 		System.out.println("packageId为 test_0.0.1时获取的属性:" + var1.toString());
 		VariableData var2 = impl.getVariable(null);
 		System.out.println("packageId为 null时获取的属性:" + var2.toString());
-	}
-
-	// @Test
-	public void testSetVariable() {
-		VariableData var = new VariableData();
-		Map<String, String> properties = new HashMap<>();
-		properties.put("test1", "test1");
-		properties.put("test2", "test2");
-		properties.put("testkey", "testvalue");
-		var.setProperties(properties);
-		if (impl.setVariable("123_test", var)) {
-			System.out.println(var.toString());
-		}
 	}
 
 	@Test
