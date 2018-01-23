@@ -2,7 +2,6 @@ package com.boco.deploy.service;
 
 import java.util.List;
 
-import com.boco.deploy.data.HostData;
 import com.boco.deploy.data.InstallLogData;
 import com.boco.deploy.data.InstanceData;
 import com.boco.deploy.data.PackageData;

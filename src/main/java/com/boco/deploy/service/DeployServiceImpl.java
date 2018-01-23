@@ -5,7 +5,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -174,7 +173,7 @@ public class DeployServiceImpl implements DeployService {
 		InstallLogData log = new InstallLogData();
 		log.setLogId(logId);
 		// 根据path路径创建file对象
-		String path = projectPath +"/" + logId;
+		String path = projectPath +"/log/" + logId;
 		File file = new File(path);
 		logger.info("Create a File object in this path:" + path);
 		BufferedReader reader = null;
