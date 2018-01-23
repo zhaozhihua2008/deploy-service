@@ -139,7 +139,8 @@ public class DeployServiceImpl implements DeployService {
 		for (InstanceData instance : instanceDatas) {
 			String instanceName = instance.getInstanceName();
 			String packageId= instance.getPackageData().getId();
-			String instanceId = packageId+Constant.UNDERLINE+instanceName;
+			String ip = instance.getHostData().getIp();
+			String instanceId = packageId+Constant.UNDERLINE+ip+Constant.UNDERLINE+instanceName;
 			String logPath = projectPath + "/log/" + instanceId + "_install_" + timestamp + ".log";
 			logPaths.add(logPath);
 			logger.info("going to install instance: "+instanceId);
@@ -157,7 +158,8 @@ public class DeployServiceImpl implements DeployService {
 		for (InstanceData instance : instanceDatas) {
 			String instanceName = instance.getInstanceName();
 			String packageId= instance.getPackageData().getId();
-			String instanceId = packageId+Constant.UNDERLINE+instanceName;
+			String ip = instance.getHostData().getIp();
+			String instanceId = packageId+Constant.UNDERLINE+ip+Constant.UNDERLINE+instanceName;
 			String logPath = projectPath + "/log/" + instanceId + "_uninstall_" + timestamp + ".log";
 			logPaths.add(logPath);
 			logger.info("going to uninstall instance: "+instanceId);
