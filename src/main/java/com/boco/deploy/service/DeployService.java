@@ -41,10 +41,10 @@ public interface DeployService {
 
 	/**
 	 * 
-	 * @param logId 日志文件id
+	 * @param logPath 日志文件全路径
 	 * @param startIndex 开始行数 0:从头读取,-1：从末尾读取,其他:从指定行开始读取
 	 * @param lineNum  行数
 	 * @return
 	 */
-	public InstallLogData getInstallLog(String logId,int startIndex,int lineNum);
+	public InstallLogData getInstallLog(String logPath,int startIndex,int lineNum);
 }

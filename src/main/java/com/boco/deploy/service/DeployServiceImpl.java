@@ -171,11 +171,11 @@ public class DeployServiceImpl implements DeployService {
 	}
 
 	@Override
-	public InstallLogData getInstallLog(String logId, int startIndex, int lineNum) {
+	public InstallLogData getInstallLog(String logPath, int startIndex, int lineNum) {
 		InstallLogData log = new InstallLogData();
-		log.setLogId(logId);
+		log.setLogPath(logPath);
 		// 根据path路径创建file对象
-		String path = projectPath +"/log/" + logId;
+		String path = logPath;
 		File file = new File(path);
 		logger.info("Create a File object in this path:" + path);
 		BufferedReader reader = null;

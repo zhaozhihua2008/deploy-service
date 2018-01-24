@@ -1,13 +1,11 @@
 package com.boco.deploy.controller;
 
-import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Before;
@@ -25,8 +23,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class DeployServiceControllerTest {
 
 	RestTemplate restTemplate = new RestTemplate();
-	String url="http://tpd4:8080/";
-//	String url="http://localhost:8080/";
+//	String url="http://tpd4:8080/";
+	String url="http://localhost:8080/";
 
 	
 	@Before
@@ -76,9 +74,9 @@ public class DeployServiceControllerTest {
 		instanceData.setVariableData(variableData);
 		
 		List<InstanceData> instanceDatas=Arrays.asList(instanceData);
-
-		String result = restTemplate.postForObject(url + "install", instanceDatas, String.class, new String[0]);
-		System.out.println(result);
+		System.out.println(toJson(instanceDatas));
+		String result = restTemplate.postForObject(url + "install", instanceDatas, String.class, "");
+		System.out.println(toJson(result));
 	}
 
 	@Test
@@ -110,7 +108,7 @@ public class DeployServiceControllerTest {
 		List<InstanceData> instanceDatas=Arrays.asList(instanceData);
 
 
-		String result = restTemplate.postForObject(url + "install", instanceDatas, String.class, new String[0]);
+		String result = restTemplate.postForObject(url + "install", instanceDatas, String.class, "");
 		System.out.println(result);
 	}
 	
@@ -139,7 +137,7 @@ public class DeployServiceControllerTest {
 		List<InstanceData> instanceDatas=Arrays.asList(instanceData);
 
 
-		String result = restTemplate.postForObject(url + "uninstall", instanceDatas, String.class, new String[0]);
+		String result = restTemplate.postForObject(url + "uninstall", instanceDatas, String.class, "");
 		System.out.println(result);
 	}
 
@@ -171,29 +169,29 @@ public class DeployServiceControllerTest {
 		
 		List<InstanceData> instanceDatas=Arrays.asList(instanceData);
 
-		String result = restTemplate.postForObject(url + "uninstall", instanceDatas, String.class, new String[0]);
+		String result = restTemplate.postForObject(url + "uninstall", instanceDatas, String.class, "");
 		System.out.println(result);
 	}
 
 	@Test
 	public void testGetInstallLog() {
 		Map<String, Object> uriVariables = new HashMap<String, Object>();
-		uriVariables.put("logId", "E:/tmp/logtest.txt");
+		uriVariables.put("logPath", "E:/tmp/logtest.txt");
 		uriVariables.put("startIndex", -1);
 		uriVariables.put("lineNum", 20);
 		System.out.println(uriVariables);
 		InstallLogData log = restTemplate.getForObject(
-				url + "log?logId={logId}&startIndex={startIndex}&lineNum={lineNum}", InstallLogData.class,
+				url + "log?logPath={logPath}&startIndex={startIndex}&lineNum={lineNum}", InstallLogData.class,
 				uriVariables);
 		System.out.println(log.getData());
 
 		Map<String, Object> variables = new HashMap<String, Object>();
-		variables.put("logId", "E:/tmp/loglogtest.txt");
+		variables.put("logPath", "E:/tmp/loglogtest.txt");
 		variables.put("startIndex", 0);
 		variables.put("lineNum", 25);
 		System.out.println(variables);
 		InstallLogData log2 = restTemplate.getForObject(
-				url + "log?logId={logId}&startIndex={startIndex}&lineNum={lineNum}", InstallLogData.class, variables);
+				url + "log?logPath={logPath}&startIndex={startIndex}&lineNum={lineNum}", InstallLogData.class, variables);
 		System.out.println(log2.getData());
 	}
 

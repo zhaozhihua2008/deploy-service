@@ -1,15 +1,15 @@
 package com.boco.deploy.data;
 
 public class InstallLogData {
-	private String logId;
+	private String logPath;
 	private String data;
 	private int endIndex;
 	private boolean eof;
-	public String getLogId() {
-		return logId;
+	public String getLogPath() {
+		return logPath;
 	}
-	public void setLogId(String logId) {
-		this.logId = logId;
+	public void setLogPath(String logPath) {
+		this.logPath = logPath;
 	}
 	public String getData() {
 		return data;

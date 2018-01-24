@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
  * @author zhaozhihua
  */
 public class ExecutorServiceManager {
+	@SuppressWarnings("unused")
 	private static final Logger logger = LoggerFactory.getLogger(ExecutorServiceManager.class);
 
 	public static final String EXECUTOR_DEFAULT = "def";

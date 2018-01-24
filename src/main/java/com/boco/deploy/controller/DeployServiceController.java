@@ -42,8 +42,8 @@ public class DeployServiceController {
 	}
 	
     @RequestMapping(value="/log",method=RequestMethod.GET)
-	public InstallLogData getInstallLog(@RequestParam String logId,@RequestParam int startIndex,@RequestParam int lineNum){
-		return deployService.getInstallLog(logId, startIndex, lineNum);
+	public InstallLogData getInstallLog(@RequestParam String logPath,@RequestParam int startIndex,@RequestParam int lineNum){
+		return deployService.getInstallLog(logPath, startIndex, lineNum);
 	}
 
 }
