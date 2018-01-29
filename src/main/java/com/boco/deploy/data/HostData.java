@@ -37,6 +37,11 @@ public class HostData {
 	public void setSudoPass(String sudoPass) {
 		this.sudoPass = sudoPass;
 	}
+	@Override
+	public String toString() {
+		return "HostData [ip=" + ip + ", userName=" + userName + ", password="
+				+ password + ", sudo=" + sudo + ", sudoPass=" + sudoPass + "]";
+	}
 
 	
 }
